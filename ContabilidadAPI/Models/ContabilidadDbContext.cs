@@ -93,6 +93,12 @@ public partial class ContabilidadDbContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<fiDiarios>()
+        .HasMany(d => d.Detalles)
+        .WithOne()
+        .HasForeignKey(d => new { d.CompaniaId, d.OficinaId, d.TransaccionId })
+        .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<FiDiariosDetalle>(entity =>
         {
             entity.HasKey(e => new { e.CompaniaId, e.OficinaId, e.TransaccionId, e.TransaccionDetalleId });
@@ -108,8 +114,6 @@ public partial class ContabilidadDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("OficinaID");
             entity.Property(e => e.TransaccionId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("TransaccionID");
             entity.Property(e => e.TransaccionDetalleId).HasColumnName("TransaccionDetalleID");
             entity.Property(e => e.Credito).HasColumnType("numeric(24, 8)");

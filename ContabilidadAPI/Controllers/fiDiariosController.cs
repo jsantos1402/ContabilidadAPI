@@ -25,7 +25,8 @@ namespace ContabilidadAPI.Controllers
 
             try
             {
-                Lista = dbContext.FiDiarios.ToList();
+                Lista = dbContext.FiDiarios.Include(d => d.Detalles).ToList();
+                
                 return StatusCode(StatusCodes.Status200OK, new { Mensaje = "Success", Respuesta = Lista });
             }
             catch (Exception ex)
@@ -51,12 +52,42 @@ namespace ContabilidadAPI.Controllers
 
         [HttpPost]
         [Route("Guardar")]
-        public IActionResult Guardar([FromBody] fiDiarios fiDiarios)
+        public IActionResult Guardar([FromBody] fiDiariosView model)
         {
+            int TransaccionDetalleID = 1;
+            
             try
             {
-                dbContext.FiDiarios.Add(fiDiarios);
+                var Header = new fiDiarios
+                {
+                    CompaniaId = model.Encabezado.CompaniaId,
+                    OficinaId = model.Encabezado.OficinaId,
+                    TransaccionId = model.Encabezado.TransaccionId,
+                    Numero = model.Encabezado.Numero,
+                    Fecha = model.Encabezado.Fecha,
+                    Estatus = model.Encabezado.Estatus
+                };
+
+                dbContext.FiDiarios.Add(Header);
                 dbContext.SaveChanges();
+
+                foreach (var detalle in model.Detalle)
+                {
+                    var detalleDb = new FiDiariosDetalle
+                    {
+                        CompaniaId = detalle.CompaniaId,
+                        OficinaId = detalle.OficinaId,
+                        TransaccionId = detalle.TransaccionId,
+                        TransaccionDetalleId = TransaccionDetalleID,
+                        CuentaId = detalle.CuentaId,
+                        Debito = detalle.Debito,
+                        Credito = detalle.Credito
+                    };
+
+                    dbContext.FiDiariosDetalles.Add(detalleDb);
+                    dbContext.SaveChanges();
+                    TransaccionDetalleID++;
+                }
 
                 return StatusCode(StatusCodes.Status201Created, new { Mensaje = "Success" });
             }
