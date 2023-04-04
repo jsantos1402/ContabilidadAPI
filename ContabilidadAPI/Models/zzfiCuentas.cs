@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ContabilidadAPI.Models;
 
-public partial class fiCuentas
+public partial class zzfiCuentas
 {
     public string CuentaId { get; set; } = null!;
 
@@ -19,7 +19,7 @@ public partial class fiCuentas
     public int? NivelId { get; set; }
 
     [JsonIgnore]
-    public virtual ICollection<fiDiariosDetalle> FiDiariosDetalles { get; } = new List<fiDiariosDetalle>();
+    public virtual ICollection<zzfiDiariosDetalle> FiDiariosDetalles { get; } = new List<zzfiDiariosDetalle>();
 
-    public virtual fiCuentasNiveles? _fiNiveles { get; set; }
+    public virtual zzfiCuentasNiveles? _fiNiveles { get; set; }
 }

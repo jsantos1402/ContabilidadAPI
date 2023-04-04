@@ -73,7 +73,7 @@ namespace ContabilidadAPI.Controllers
 
                 foreach (var detalle in model.Detalle)
                 {
-                    var detalleDb = new FiDiariosDetalle
+                    var detalleDb = new fiDiariosDetalle
                     {
                         CompaniaId = detalle.CompaniaId,
                         OficinaId = detalle.OficinaId,

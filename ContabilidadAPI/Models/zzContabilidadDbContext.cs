@@ -4,34 +4,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ContabilidadAPI.Models;
 
-public partial class ContabilidadDbContext : DbContext
+public partial class zzContabilidadDbContext : DbContext
 {
-    public ContabilidadDbContext()
+    public zzContabilidadDbContext()
     {
     }
 
-    public ContabilidadDbContext(DbContextOptions<ContabilidadDbContext> options)
+    public zzContabilidadDbContext(DbContextOptions<zzContabilidadDbContext> options)
         : base(options)
     {
     }
 
-    public virtual DbSet<fiCuentas> FiCuentas { get; set; }
+    public virtual DbSet<zzfiCuentas> FiCuentas { get; set; }
 
-    public virtual DbSet<fiCuentasNiveles> FiCuentasNiveles { get; set; }
+    public virtual DbSet<zzfiCuentasNiveles> FiCuentasNiveles { get; set; }
 
-    public virtual DbSet<fiDiarios> FiDiarios { get; set; }
+    public virtual DbSet<zzfiDiarios> FiDiarios { get; set; }
 
-    public virtual DbSet<fiDiariosDetalle> FiDiariosDetalles { get; set; }
-
-    public virtual DbSet<Roles> Roles { get; set; }
-
-    public virtual DbSet<RolesAccesos> RolesAccesos { get; set; }
-
-    public virtual DbSet<Usuarios> Usuarios { get; set; }
+    public virtual DbSet<zzfiDiariosDetalle> FiDiariosDetalles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<fiCuentas>(entity =>
+        modelBuilder.Entity<zzfiCuentas>(entity =>
         {
             entity.HasKey(e => e.CuentaId);
 
@@ -58,12 +52,12 @@ public partial class ContabilidadDbContext : DbContext
 
             entity.HasOne(d => d._fiNiveles).WithMany(p => p.FiCuenta)
                 .HasForeignKey(d => d.NivelId)
-                .HasConstraintName("FK__fiCuentas__Nivel__2A4B4B5E");
+                .HasConstraintName("FK__fiCuentas__Nivel__286302EC");
         });
 
-        modelBuilder.Entity<fiCuentasNiveles>(entity =>
+        modelBuilder.Entity<zzfiCuentasNiveles>(entity =>
         {
-            entity.HasKey(e => e.NivelId).HasName("PK__fiCuenta__316FA2976A20AA9C");
+            entity.HasKey(e => e.NivelId).HasName("PK__fiCuenta__316FA297354F57ED");
 
             entity.ToTable("fiCuentasNiveles");
 
@@ -75,7 +69,7 @@ public partial class ContabilidadDbContext : DbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<fiDiarios>(entity =>
+        modelBuilder.Entity<zzfiDiarios>(entity =>
         {
             entity.HasKey(e => new { e.CompaniaId, e.OficinaId, e.TransaccionId });
 
@@ -99,13 +93,13 @@ public partial class ContabilidadDbContext : DbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<fiDiarios>()
+        modelBuilder.Entity<zzfiDiarios>()
         .HasMany(d => d.Detalles)
         .WithOne()
         .HasForeignKey(d => new { d.CompaniaId, d.OficinaId, d.TransaccionId })
         .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<fiDiariosDetalle>(entity =>
+        modelBuilder.Entity<zzfiDiariosDetalle>(entity =>
         {
             entity.HasKey(e => new { e.CompaniaId, e.OficinaId, e.TransaccionId, e.TransaccionDetalleId });
 
@@ -119,7 +113,8 @@ public partial class ContabilidadDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("OficinaID");
-            entity.Property(e => e.TransaccionId).HasColumnName("TransaccionID");
+            entity.Property(e => e.TransaccionId)
+                .HasColumnName("TransaccionID");
             entity.Property(e => e.TransaccionDetalleId).HasColumnName("TransaccionDetalleID");
             entity.Property(e => e.Credito).HasColumnType("numeric(24, 8)");
             entity.Property(e => e.CuentaId)
@@ -130,65 +125,7 @@ public partial class ContabilidadDbContext : DbContext
 
             entity.HasOne(d => d.Cuenta).WithMany(p => p.FiDiariosDetalles)
                 .HasForeignKey(d => d.CuentaId)
-                .HasConstraintName("FK__fiDiarios__Cuent__2B3F6F97");
-        });
-
-        modelBuilder.Entity<Roles>(entity =>
-        {
-            entity.HasKey(e => e.RolId).HasName("PK__Roles__F92302D116FCDDFD");
-
-            entity.Property(e => e.RolId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("RolID");
-            entity.Property(e => e.Estatus)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.RolNombre)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-        });
-
-        modelBuilder.Entity<RolesAccesos>(entity =>
-        {
-            entity.HasKey(e => e.RolId).HasName("PK__RolesAcc__F92302D132299987");
-
-            entity.Property(e => e.RolId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("RolID");
-
-            entity.HasOne(d => d.Rol).WithOne(p => p.RolesAcceso)
-                .HasForeignKey<RolesAccesos>(d => d.RolId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__RolesAcce__RolID__37A5467C");
-        });
-
-        modelBuilder.Entity<Usuarios>(entity =>
-        {
-            entity.HasKey(e => e.UsuarioId).HasName("PK__Usuarios__2B3DE798239E184A");
-
-            entity.Property(e => e.UsuarioId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("UsuarioID");
-            entity.Property(e => e.Contrasena)
-                .HasMaxLength(500)
-                .IsUnicode(false);
-            entity.Property(e => e.Correo)
-                .HasMaxLength(200)
-                .IsUnicode(false);
-            entity.Property(e => e.RolId)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("RolID");
-            entity.Property(e => e.UsuarioNombre)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.Rol).WithMany(p => p.Usuarios)
-                .HasForeignKey(d => d.RolId)
-                .HasConstraintName("FK__Usuarios__RolID__34C8D9D1");
+                .HasConstraintName("FK__fiDiarios__Cuent__2D27B809");
         });
 
         OnModelCreatingPartial(modelBuilder);

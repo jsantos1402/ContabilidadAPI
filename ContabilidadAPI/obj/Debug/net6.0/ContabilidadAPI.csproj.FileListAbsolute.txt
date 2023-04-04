@@ -172,3 +172,5 @@ C:\Users\IP08LT\source\repos\ContabilidadAPI\ContabilidadAPI\obj\Debug\net6.0\re
 C:\Users\IP08LT\source\repos\ContabilidadAPI\ContabilidadAPI\obj\Debug\net6.0\ContabilidadAPI.pdb
 C:\Users\IP08LT\source\repos\ContabilidadAPI\ContabilidadAPI\obj\Debug\net6.0\ContabilidadAPI.genruntimeconfig.cache
 C:\Users\IP08LT\source\repos\ContabilidadAPI\ContabilidadAPI\obj\Debug\net6.0\ref\ContabilidadAPI.dll
+C:\Users\IP08LT\source\repos\ContabilidadAPI\ContabilidadAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\IP08LT\source\repos\ContabilidadAPI\ContabilidadAPI\bin\Debug\net6.0\Newtonsoft.Json.dll
