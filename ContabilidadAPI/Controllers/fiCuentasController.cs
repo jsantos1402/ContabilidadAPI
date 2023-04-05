@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ContabilidadAPI.Models;
 using Microsoft.AspNetCore.Cors;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContabilidadAPI.Controllers
 {
@@ -104,26 +106,50 @@ namespace ContabilidadAPI.Controllers
 
         [HttpDelete]
         [Route("Eliminar/{CuentaID}")]
-
+        [Authorize]
         public IActionResult Eliminar(string CuentaID)
         {
-            fiCuentas cuentas = dbContext.FiCuentas.Find(CuentaID);
+            var Identity = HttpContext.User.Identity as ClaimsIdentity;
 
-            if (cuentas is null)
+            Login login = new Login(dbContext);
+            var _Token = login.validarToken(Identity);
+            if (!_Token.Procesado)
             {
-                return BadRequest("Cuenta no encontrada");
+                return StatusCode(StatusCodes.Status401Unauthorized, new { _Token });
             }
 
-            try
-            {
-                dbContext.FiCuentas.Remove(cuentas);
-                dbContext.SaveChanges();
+            Usuarios usuario = _Token.Mensaje;
 
-                return StatusCode(StatusCodes.Status202Accepted, new { Mensaje = "Success" });
-            }
-            catch (Exception ex)
+            RolesAccesos Accesos = dbContext.RolesAccesos.Where(R => R.RolId == usuario.RolId).FirstOrDefault();
+
+            if (Accesos == null) 
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message });
+                return StatusCode(StatusCodes.Status403Forbidden, new { Mensaje = "El usuario no tiene una configuracion de roles correcta" });
+            }
+
+            if (Accesos.Eliminar == true)
+            {
+                fiCuentas cuentas = dbContext.FiCuentas.Find(CuentaID);
+
+                if (cuentas is null)
+                {
+                    return BadRequest("Cuenta no encontrada");
+                }
+
+                try
+                {
+                    dbContext.FiCuentas.Remove(cuentas);
+                    dbContext.SaveChanges();
+
+                    return StatusCode(StatusCodes.Status202Accepted, new { Mensaje = "Success" });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message });
+                }
+            } else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { Mensaje = "El usuario no tiene acceso a eliminar" });
             }
         }
     }

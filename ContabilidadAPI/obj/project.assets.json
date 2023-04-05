@@ -3805,19 +3805,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\IP08LT\\.nuget\\packages\\": {}
+    "C:\\Users\\Johansel Santos\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\IP08LT\\source\\repos\\ContabilidadAPI\\ContabilidadAPI\\ContabilidadAPI.csproj",
+      "projectUniqueName": "C:\\Users\\Johansel Santos\\OneDrive\\Proyectos\\C#\\API\\ContabilidadAPI\\ContabilidadAPI\\ContabilidadAPI.csproj",
       "projectName": "ContabilidadAPI",
-      "projectPath": "C:\\Users\\IP08LT\\source\\repos\\ContabilidadAPI\\ContabilidadAPI\\ContabilidadAPI.csproj",
-      "packagesPath": "C:\\Users\\IP08LT\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\IP08LT\\source\\repos\\ContabilidadAPI\\ContabilidadAPI\\obj\\",
+      "projectPath": "C:\\Users\\Johansel Santos\\OneDrive\\Proyectos\\C#\\API\\ContabilidadAPI\\ContabilidadAPI\\ContabilidadAPI.csproj",
+      "packagesPath": "C:\\Users\\Johansel Santos\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Johansel Santos\\OneDrive\\Proyectos\\C#\\API\\ContabilidadAPI\\ContabilidadAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\IP08LT\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Johansel Santos\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

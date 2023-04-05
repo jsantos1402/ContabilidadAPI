@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ContabilidadAPI.Models;
 
@@ -20,6 +21,6 @@ public partial class fiCuentas
 
     [JsonIgnore]
     public virtual ICollection<fiDiariosDetalle> FiDiariosDetalles { get; } = new List<fiDiariosDetalle>();
-
+    [JsonIgnore]
     public virtual fiCuentasNiveles? _fiNiveles { get; set; }
 }

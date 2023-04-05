@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace ContabilidadAPI.Models;
@@ -15,5 +16,6 @@ public partial class RolesAccesos
 
     public bool? Eliminar { get; set; }
 
+    [JsonIgnore]
     public virtual Roles Rol { get; set; } = null!;
 }
