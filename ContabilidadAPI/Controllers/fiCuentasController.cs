@@ -20,87 +20,197 @@ namespace ContabilidadAPI.Controllers
 
         [HttpGet]
         [Route("Listar")]
-        public IActionResult Listar() { 
-            List<fiCuentas> Lista = new List<fiCuentas>();
+        [Authorize]
+        public IActionResult Listar() 
+        {
+            var Identity = HttpContext.User.Identity as ClaimsIdentity;
+            Login login = new Login(dbContext);
 
-            try
+            var _Token = login.validarToken(Identity);
+
+            if (!_Token.Procesado)
             {
-                Lista = dbContext.FiCuentas.Include(N => N._fiNiveles).ToList();
-
-                return StatusCode(StatusCodes.Status200OK, new { Mensaje = "Success", Respuesta = Lista });
+                return StatusCode(StatusCodes.Status401Unauthorized, new { _Token });
             }
-            catch (Exception ex)
+
+            Usuarios usuario = _Token.Mensaje;
+
+            RolesAccesos Accesos = dbContext.RolesAccesos.Where(R => R.RolId == usuario.RolId).FirstOrDefault();
+
+            if (Accesos == null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message, Respuesta = Lista });
+                return StatusCode(StatusCodes.Status403Forbidden, new { Mensaje = "El usuario no tiene una configuracion de roles correcta" });
+            }
+
+            if (Accesos.Consultar == true)
+            {
+                List<fiCuentas> Lista = new List<fiCuentas>();
+
+                try
+                {
+                    Lista = dbContext.FiCuentas.Include(N => N._fiNiveles).ToList();
+
+                    return StatusCode(StatusCodes.Status200OK, new { Mensaje = "Success", Respuesta = Lista });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message, Respuesta = Lista });
+                }
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { Mensaje = "El usuario no tiene acceso a consultar" });
             }
         }
 
         [HttpGet]
         [Route("ObtenerByID/{CuentaID}")]
-        public IActionResult ObtenerByID(string CuentaID) {
+        [Authorize]
+        public IActionResult ObtenerByID(string CuentaID) 
+        {
+            var Identity = HttpContext.User.Identity as ClaimsIdentity;
+            Login login = new Login(dbContext);
 
-            fiCuentas cuentas = dbContext.FiCuentas.Find(CuentaID);
+            var _Token = login.validarToken(Identity);
 
-            if (cuentas == null)
+            if (!_Token.Procesado)
             {
-                return BadRequest("Cuenta no encontrada");
+                return StatusCode(StatusCodes.Status401Unauthorized, new { _Token });
             }
 
-            try
+            Usuarios usuario = _Token.Mensaje;
+
+            RolesAccesos Accesos = dbContext.RolesAccesos.Where(R => R.RolId == usuario.RolId).FirstOrDefault();
+
+            if (Accesos == null)
             {
-                cuentas = dbContext.FiCuentas.Include(N => N._fiNiveles).Where(f => f.CuentaId == CuentaID).FirstOrDefault();
-                return StatusCode(StatusCodes.Status200OK, new { Mensaje = "Success", Respuesta = cuentas });
+                return StatusCode(StatusCodes.Status403Forbidden, new { Mensaje = "El usuario no tiene una configuracion de roles correcta" });
             }
-            catch (Exception ex)
+
+            if (Accesos.Consultar == true)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message, Respuesta = cuentas });
+                fiCuentas cuentas = dbContext.FiCuentas.Find(CuentaID);
+
+                if (cuentas == null)
+                {
+                    return BadRequest("Cuenta no encontrada");
+                }
+
+                try
+                {
+                    cuentas = dbContext.FiCuentas.Include(N => N._fiNiveles).Where(f => f.CuentaId == CuentaID).FirstOrDefault();
+                    return StatusCode(StatusCodes.Status200OK, new { Mensaje = "Success", Respuesta = cuentas });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message, Respuesta = cuentas });
+                }
             }
+            else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { Mensaje = "El usuario no tiene acceso a consultar" });
+            }
+            
         }
 
         [HttpPost]
         [Route("Guardar")]
+        [Authorize]
         public IActionResult Guardar([FromBody] fiCuentas cuentas)
         {
-            try
-            {
-                dbContext.FiCuentas.Add(cuentas);
-                dbContext.SaveChanges();
+            var Identity = HttpContext.User.Identity as ClaimsIdentity;
+            Login login = new Login(dbContext);
 
-                return StatusCode(StatusCodes.Status201Created, new { Mensaje = "Success" });
-            }
-            catch (Exception ex)
+            var _Token = login.validarToken(Identity);
+
+            if (!_Token.Procesado)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message });
+                return StatusCode(StatusCodes.Status401Unauthorized, new { _Token });
             }
+
+            Usuarios usuario = _Token.Mensaje;
+
+            RolesAccesos Accesos = dbContext.RolesAccesos.Where(R => R.RolId == usuario.RolId).FirstOrDefault();
+
+            if (Accesos == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { Mensaje = "El usuario no tiene una configuracion de roles correcta" });
+            }
+
+            if (Accesos.Insertar == true)
+            {
+                try
+                {
+                    dbContext.FiCuentas.Add(cuentas);
+                    dbContext.SaveChanges();
+
+                    return StatusCode(StatusCodes.Status201Created, new { Mensaje = "Success" });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message });
+                }
+            } else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { Mensaje = "El usuario no tiene acceso a insertar" });
+            }
+            
         }
 
         [HttpPut]
         [Route("Modificar")]
+        [Authorize]
         public IActionResult Modificar([FromBody] fiCuentas cuentas)
         {
-            fiCuentas ofiCuentas = dbContext.FiCuentas.Find(cuentas.CuentaId);
+            var Identity = HttpContext.User.Identity as ClaimsIdentity;
+            Login login = new Login(dbContext);
 
-            if (ofiCuentas == null)
+            var _Token = login.validarToken(Identity);
+
+            if (!_Token.Procesado)
             {
-                return BadRequest("Cuenta no encontrada");
+                return StatusCode(StatusCodes.Status401Unauthorized, new { _Token });
             }
 
-            try
+            Usuarios usuario = _Token.Mensaje;
+
+            RolesAccesos Accesos = dbContext.RolesAccesos.Where(R => R.RolId == usuario.RolId).FirstOrDefault();
+
+            if (Accesos == null)
             {
-                ofiCuentas.CuentaNombre = cuentas.CuentaNombre is null ? ofiCuentas.CuentaNombre : cuentas.CuentaNombre;
-                ofiCuentas.Origen = cuentas.Origen is null ? ofiCuentas.Origen : cuentas.Origen;
-                ofiCuentas.Estatus = cuentas.Estatus is null ? ofiCuentas.Estatus : cuentas.Estatus;
-                ofiCuentas.CuentaControlId = cuentas.CuentaControlId is null ? ofiCuentas.CuentaControlId : cuentas.CuentaControlId;
-                ofiCuentas.NivelId = cuentas.NivelId is null ? ofiCuentas.NivelId : cuentas.NivelId;
-
-                dbContext.FiCuentas.Update(ofiCuentas);
-                dbContext.SaveChanges();
-
-                return StatusCode(StatusCodes.Status202Accepted, new { Mensaje = "Success" });
+                return StatusCode(StatusCodes.Status403Forbidden, new { Mensaje = "El usuario no tiene una configuracion de roles correcta" });
             }
-            catch (Exception ex)
+
+            if (Accesos.Modificar == true)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message });
+                fiCuentas ofiCuentas = dbContext.FiCuentas.Find(cuentas.CuentaId);
+
+                if (ofiCuentas == null)
+                {
+                    return BadRequest("Cuenta no encontrada");
+                }
+
+                try
+                {
+                    ofiCuentas.CuentaNombre = cuentas.CuentaNombre is null ? ofiCuentas.CuentaNombre : cuentas.CuentaNombre;
+                    ofiCuentas.Origen = cuentas.Origen is null ? ofiCuentas.Origen : cuentas.Origen;
+                    ofiCuentas.Estatus = cuentas.Estatus is null ? ofiCuentas.Estatus : cuentas.Estatus;
+                    ofiCuentas.CuentaControlId = cuentas.CuentaControlId is null ? ofiCuentas.CuentaControlId : cuentas.CuentaControlId;
+                    ofiCuentas.NivelId = cuentas.NivelId is null ? ofiCuentas.NivelId : cuentas.NivelId;
+
+                    dbContext.FiCuentas.Update(ofiCuentas);
+                    dbContext.SaveChanges();
+
+                    return StatusCode(StatusCodes.Status202Accepted, new { Mensaje = "Success" });
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Mensaje = ex.Message });
+                }
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, new { Mensaje = "El usuario no tiene acceso a modificar" });
             }
         }
 
